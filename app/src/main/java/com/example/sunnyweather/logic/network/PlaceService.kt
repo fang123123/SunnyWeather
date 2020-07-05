@@ -19,5 +19,5 @@ interface PlaceService {
      * @return Call<PlaceResponse> 具体地址信息
      */
     @GET("v2/place?token=${SunnyWeatherApplication.TOKEN}&lang=zh_CN")
-    fun searchPlaces(@Query("query") query:String): Call<PlaceResponse>
+    fun searchPlaces(@Query("query") query: String): Call<PlaceResponse>
 }

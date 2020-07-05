@@ -14,9 +14,11 @@ import kotlin.coroutines.suspendCoroutine
  * @Description: 网络数据源
  */
 object SunnyWeatherNetwork {
-    //构建一个地址请求服务
+    //构建地址请求服务
     private val placeService = ServiceCreator.create<PlaceService>()
 
+    //构建天气请求服务
+    private val weatherService = ServiceCreator.create<WeatherService>()
 
     /**
      * 获取地址的具体地址信息
@@ -24,6 +26,24 @@ object SunnyWeatherNetwork {
      * @return PlaceResponse 具体地址信息
      */
     suspend fun searchPlaces(query: String) = placeService.searchPlaces(query).await()
+
+    /**
+     * 获取地区实时天气
+     * @param lng String 经度
+     * @param lat String 纬度
+     * @return RealtimeResponse
+     */
+    suspend fun searchRealtimeWeather(lng: String, lat: String) =
+        weatherService.searchRealtimeWeather(lng, lat).await()
+
+    /**
+     * 获取地区未来几天天气
+     * @param lng String 经度
+     * @param lat String 纬度
+     * @return DailyResponse
+     */
+    suspend fun searchDailyWeather(lng: String, lat: String) =
+        weatherService.searchDailyWeather(lng, lat).await()
 
     //使用suspendCoroutine函数简化回调方式
     private suspend fun <T> Call<T>.await(): T {

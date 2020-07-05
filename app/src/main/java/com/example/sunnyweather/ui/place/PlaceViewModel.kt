@@ -23,6 +23,7 @@ class PlaceViewModel : ViewModel() {
 
     /**
      * 网络请求返回的具体地址信息
+     * @Type LiveData<Result<List<Place>>>
      */
     val placeLiveData = Transformations.switchMap(searchLiveData) { query ->
         Repository.searchPlaces(query)
@@ -35,4 +36,22 @@ class PlaceViewModel : ViewModel() {
     fun searchPlaces(query: String) {
         searchLiveData.value = query
     }
+
+    /**
+     * 保存地址
+     * @param place Place
+     */
+    fun savePlace(place: Place) = Repository.savePlace(place)
+
+    /**
+     * 获取地址
+     * @return Place
+     */
+    fun getSavedPlace() = Repository.getSavedPlace()
+
+    /**
+     * 地址是否保存
+     * @return Boolean
+     */
+    fun isPlaceSaved() = Repository.isPlaceSaved()
 }

@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sunnyweather.R
 import com.example.sunnyweather.logic.model.Place
+import com.example.sunnyweather.ui.weather.WeatherActivity
+import com.example.sunnyweather.util.Utils
 
 /**
  * @author: Fangjie
@@ -15,7 +17,7 @@ import com.example.sunnyweather.logic.model.Place
  * @version:
  * @Description: 由于ViewModel通常和Activity是一一对应，所以放在ui包下
  */
-class PlaceAdapter(private val fragment: Fragment, private val placeList: List<Place>) :
+class PlaceAdapter(private val fragment: PlaceFragment, private val placeList: List<Place>) :
     RecyclerView.Adapter<PlaceAdapter.ViewHolder>() {
     /**
      * 缓存item视图
@@ -30,7 +32,22 @@ class PlaceAdapter(private val fragment: Fragment, private val placeList: List<P
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.place_item, parent, false)
-        return ViewHolder(view)
+        val holder = ViewHolder(view)
+        holder.itemView.setOnClickListener {
+            val position = holder.adapterPosition
+            val place = placeList[position]
+            //保存选中的地址
+            fragment.viewModel.savePlace(place)
+            //界面跳转
+            Utils.startActivity<WeatherActivity>(parent.context) {
+                putExtra("location_lng", place.location.lng)
+                putExtra("location_lat", place.location.lat)
+                putExtra("place_name", place.name)
+            }
+            //结束当前fragment
+            fragment.activity?.finish()
+        }
+        return holder
     }
 
     override fun getItemCount(): Int = placeList.size

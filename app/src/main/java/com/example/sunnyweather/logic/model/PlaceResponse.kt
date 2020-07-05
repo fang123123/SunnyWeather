@@ -1,6 +1,5 @@
 package com.example.sunnyweather.logic.model
 
-import android.location.Location
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -9,6 +8,7 @@ import com.google.gson.annotations.SerializedName
  * @version:
  * @Description: 地址实体类
  */
+
 /**
  * 查询地址信息结果
  * @property status String
@@ -19,9 +19,9 @@ data class PlaceResponse(val status: String,val places:List<Place>)
 
 /**
  * 地址信息
- * @property name String
- * @property location Location
- * @property address String
+ * @property name String 地区名字
+ * @property location Location 经纬度
+ * @property address String 详细地址
  * @constructor
  */
 data class Place(val name:String, val location: Location, @SerializedName("formatted_address") val address:String)
