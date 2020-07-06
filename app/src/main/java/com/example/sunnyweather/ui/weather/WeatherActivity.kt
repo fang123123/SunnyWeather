@@ -4,12 +4,16 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.sunnyweather.R
@@ -24,7 +28,7 @@ import java.util.*
 
 class WeatherActivity : AppCompatActivity() {
 
-    private val viewModel by lazy { ViewModelProvider(this).get(WeatherViewModel::class.java) }
+    val viewModel by lazy { ViewModelProvider(this).get(WeatherViewModel::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +39,42 @@ class WeatherActivity : AppCompatActivity() {
         //将状态栏设置为透明
         window.statusBarColor = Color.TRANSPARENT
         setContentView(R.layout.activity_weather)
+        //设置swipeRefreshLayout的属性
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary)
+        //通过下拉刷新方式，手动刷新天气
+        swipeRefresh.setOnRefreshListener {
+            refreshWeather()
+        }
+        //点击打开侧边栏
+        navBtn.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)
+        }
+        drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerStateChanged(newState: Int) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                TODO("Not yet implemented")
+                //获取系统输入法管理器
+                val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                //当滑动菜单被隐藏时，将输入法隐藏
+                manager.hideSoftInputFromWindow(
+                    drawerView.windowToken,
+                    InputMethodManager.HIDE_NOT_ALWAYS
+                )
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                TODO("Not yet implemented")
+            }
+        })
+
+        //从intent中获取传入地址数据
         if (viewModel.locationLng.isEmpty()) {
             viewModel.locationLng = intent.getStringExtra("location_lng") ?: ""
         }
@@ -44,6 +84,7 @@ class WeatherActivity : AppCompatActivity() {
         if (viewModel.placeName.isEmpty()) {
             viewModel.placeName = intent.getStringExtra("place_name") ?: ""
         }
+        //更新天气回调
         viewModel.weatherLiveData.observe(this, Observer { result ->
             val weather = result.getOrNull()
             if (weather != null) {
@@ -52,10 +93,17 @@ class WeatherActivity : AppCompatActivity() {
                 Toast.makeText(this, "无法成功获取天气信息", Toast.LENGTH_SHORT).show()
                 result.exceptionOrNull()?.printStackTrace()
             }
+            //获取结果后，隐藏进度条
+            swipeRefresh.isRefreshing = false
         })
-        viewModel.refreshWeather(viewModel.locationLng, viewModel.locationLat)
+        //更新天气，得在添加回调函数之后调用
+        refreshWeather()
     }
 
+    /**
+     * 根据返回天气结果，在布局中动态添加空间
+     * @param weather Weather
+     */
     private fun showWeatherInfo(weather: Weather) {
         val realtime = weather.realtime
         val daily = weather.daily
@@ -114,5 +162,14 @@ class WeatherActivity : AppCompatActivity() {
         carWashingText.text = lifeIndex.carWashing[0].desc
         //将界面显示
         weatherLayout.visibility = View.VISIBLE
+    }
+
+    /**
+     * 获取天气信息
+     */
+    fun refreshWeather() {
+        viewModel.refreshWeather(viewModel.locationLng, viewModel.locationLat)
+        //刷新时，显示进度条
+        swipeRefresh.isRefreshing = true
     }
 }

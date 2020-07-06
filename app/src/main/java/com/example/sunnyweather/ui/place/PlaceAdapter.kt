@@ -4,12 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sunnyweather.R
 import com.example.sunnyweather.logic.model.Place
 import com.example.sunnyweather.ui.weather.WeatherActivity
 import com.example.sunnyweather.util.Utils
+import kotlinx.android.synthetic.main.activity_weather.*
 
 /**
  * @author: Fangjie
@@ -37,15 +37,26 @@ class PlaceAdapter(private val fragment: PlaceFragment, private val placeList: L
             val position = holder.adapterPosition
             val place = placeList[position]
             //保存选中的地址
-            fragment.viewModel.savePlace(place)
-            //界面跳转
-            Utils.startActivity<WeatherActivity>(parent.context) {
-                putExtra("location_lng", place.location.lng)
-                putExtra("location_lat", place.location.lat)
-                putExtra("place_name", place.name)
+            val activity = fragment.activity
+            if (activity is WeatherActivity) {
+                //如果在WeatherActivity中，就关闭滑动菜单
+                activity.drawerLayout.closeDrawers()
+                activity.viewModel.placeName = place.name
+                activity.viewModel.locationLng = place.location.lng
+                activity.viewModel.locationLat = place.location.lat
+                activity.refreshWeather()
+            } else {
+                //界面跳转
+                Utils.startActivity<WeatherActivity>(parent.context) {
+                    putExtra("location_lng", place.location.lng)
+                    putExtra("location_lat", place.location.lat)
+                    putExtra("place_name", place.name)
+                }
+                //结束当前fragment
+                activity?.finish()
             }
-            //结束当前fragment
-            fragment.activity?.finish()
+            //当前面逻辑处理成功再保存，如果出错后，保存了也是错误的地址
+            fragment.viewModel.savePlace(place)
         }
         return holder
     }

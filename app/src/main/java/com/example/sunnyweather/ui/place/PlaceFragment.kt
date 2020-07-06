@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.sunnyweather.MainActivity
 import com.example.sunnyweather.R
 import com.example.sunnyweather.ui.weather.WeatherActivity
 import com.example.sunnyweather.util.Utils
@@ -39,7 +40,7 @@ class PlaceFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         //如果当前已有存储的地址数据，就获取已存储的数据
-        if (viewModel.isPlaceSaved()) {
+        if (activity !is WeatherActivity && viewModel.isPlaceSaved()) {
             val place = viewModel.getSavedPlace()
             Utils.startActivity<WeatherActivity>(context!!) {
                 putExtra("location_lng", place.location.lng)
