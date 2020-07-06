@@ -51,15 +51,12 @@ class WeatherActivity : AppCompatActivity() {
         }
         drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
             override fun onDrawerStateChanged(newState: Int) {
-                TODO("Not yet implemented")
             }
 
             override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
-                TODO("Not yet implemented")
             }
 
             override fun onDrawerClosed(drawerView: View) {
-                TODO("Not yet implemented")
                 //获取系统输入法管理器
                 val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 //当滑动菜单被隐藏时，将输入法隐藏
@@ -70,7 +67,6 @@ class WeatherActivity : AppCompatActivity() {
             }
 
             override fun onDrawerOpened(drawerView: View) {
-                TODO("Not yet implemented")
             }
         })
 
